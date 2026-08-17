@@ -1,0 +1,24 @@
+.hint {
+  color: #64748b;
+  margin-bottom: 0.4rem;
+}
+
+.modulos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem 1rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.modulo-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  label {
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+}

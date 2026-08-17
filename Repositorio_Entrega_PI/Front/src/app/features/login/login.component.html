@@ -1,0 +1,116 @@
+<div class="login-page">
+  <div class="login-hero">
+    <div class="hero-content">
+      <div class="hero-logo">
+        <img src="assets/el_troje_logo.png" alt="Hacienda El Troje" class="login-brand-img" />
+        <div class="hero-title">
+          <span>HACIENDA</span>
+          <span>EL TROJE</span>
+        </div>
+      </div>
+
+      <div class="hero-underline"></div>
+
+      <h2 class="hero-subtitle">PesaJusto — Balanza Camionera</h2>
+      <p class="hero-description">Control biométrico de peso, no-repudio digital y detección inteligente de merma.</p>
+
+      <div class="hero-features">
+        <div class="feature-item">
+          <i class="pi pi-wifi"></i>
+          <div>
+            <strong>Tiempo Real</strong>
+            <span>Pesos actualizados al instante</span>
+          </div>
+        </div>
+        <div class="feature-item">
+          <i class="pi pi-shield"></i>
+          <div>
+            <strong>Seguro</strong>
+            <span>Tus datos y operaciones protegidos</span>
+          </div>
+        </div>
+        <div class="feature-item">
+          <i class="pi pi-chart-line"></i>
+          <div>
+            <strong>Eficiente</strong>
+            <span>Operaciones rápidas y confiables</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-form-panel">
+    <div class="login-card">
+      <div class="card-avatar">
+        <img src="assets/el_troje_logo.png" alt="Logo" class="avatar-logo-img" />
+      </div>
+
+      <h2>Iniciar sesión</h2>
+      <p class="card-subtitle">Ingresa tus credenciales para acceder al sistema</p>
+
+      @if (error()) {
+        <p-message severity="error" [text]="error()!" styleClass="w-full"></p-message>
+      }
+
+      <div class="field">
+        <label>Usuario</label>
+        <div class="input-icon-wrapper">
+          <i class="pi pi-user"></i>
+          <input
+            pInputText
+            [(ngModel)]="nombreUsuario"
+            (keyup.enter)="ingresar()"
+            placeholder="Nombre de usuario"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Contraseña</label>
+        <div class="input-icon-wrapper">
+          <i class="pi pi-lock"></i>
+          <input
+            pInputText
+            [type]="mostrarClave() ? 'text' : 'password'"
+            [(ngModel)]="password"
+            (keyup.enter)="ingresar()"
+            placeholder="Contraseña"
+          />
+          <i
+            class="pi toggle-eye"
+            [class.pi-eye]="!mostrarClave()"
+            [class.pi-eye-slash]="mostrarClave()"
+            (click)="mostrarClave.set(!mostrarClave())"
+          ></i>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="remember-me">
+          <p-checkbox [(ngModel)]="recordarme" [binary]="true" inputId="recordarme"></p-checkbox>
+          <label for="recordarme">Recordarme</label>
+        </div>
+        <a class="forgot-link" (click)="olvidoContrasena()">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      <button
+        pButton
+        type="button"
+        label="Ingresar"
+        icon="pi pi-arrow-right"
+        iconPos="right"
+        class="login-btn"
+        [loading]="cargando()"
+        (click)="ingresar()"
+      ></button>
+
+      <div class="card-divider"></div>
+
+      <div class="card-footer">
+        <i class="pi pi-shield"></i>
+        <span>Sistema seguro y monitoreado</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,220 @@
+.page-header-row {
+  margin-bottom: 1.25rem;
+
+  .page-subtitle {
+    font-size: 0.88rem;
+    color: #64748b;
+    margin: 0.25rem 0 0;
+  }
+}
+
+.placa-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  background: #f1f5f9;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+}
+
+.empresa-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+  color: #1e293b;
+
+  strong {
+    color: #0f172a;
+  }
+}
+
+.taras-resumen-col {
+  max-width: 320px;
+}
+
+.taras-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tara-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  border: 1px solid #e2e8f0;
+
+  &.tara-vigente {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #166534;
+
+    .chip-kg {
+      color: #15803d;
+    }
+  }
+
+  &.tara-vencida {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+  }
+
+  .chip-prod {
+    font-weight: 600;
+  }
+
+  .chip-dias {
+    font-size: 0.7rem;
+    color: #64748b;
+  }
+}
+
+.sin-tara {
+  color: #94a3b8;
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+// DIÁLOGO TARAS POR PRODUCTO
+.tara-dialog-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  h4 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+}
+
+.veh-info-banner {
+  display: flex;
+  gap: 1.5rem;
+  background: #f8fafc;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  align-items: center;
+
+  .veh-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+
+    .label {
+      color: #64748b;
+    }
+  }
+}
+
+.tabla-taras-wrap {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabla-taras-custom {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th {
+    background: #f1f5f9;
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    color: #475569;
+    font-weight: 600;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+  }
+
+  .tara-val-destacado {
+    font-weight: 700;
+    color: #16a34a;
+    font-size: 0.92rem;
+  }
+
+  .dias-badge {
+    display: inline-block;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    &.dias-ok {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    &.dias-alerta {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    &.dias-vencido {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  }
+}
+
+.nueva-tara-section {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px dashed #cbd5e1;
+
+  .bascula-live-mini {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+
+    .label {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-right: 0.5rem;
+    }
+
+    .peso-live {
+      font-size: 1.2rem;
+      color: #16a34a;
+    }
+  }
+
+  .form-grid.three-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.85rem;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .action-taras-btn {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+}

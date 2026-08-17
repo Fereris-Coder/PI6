@@ -1,0 +1,175 @@
+@import "primeicons/primeicons.css";
+
+// ==============================================================================
+// VARIABLES & DESIGN TOKENS (IDENTIDAD DE MARCA: HACIENDA EL TROJE)
+// ==============================================================================
+:root {
+  --brand-red: #E52421;
+  --brand-red-light: #FEE2E2;
+  --brand-green: #00A859;
+  --brand-green-light: #DCFCE7;
+  --brand-dark-emerald: #0D5238;
+  --brand-gold: #D49A29;
+  --brand-gold-light: #FEF3C7;
+  
+  --bg-main: #F4F6FB;
+  --bg-card: #FFFFFF;
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --text-muted: #94A3B8;
+  --border-card: #E2E8F0;
+  
+  --radius-card: 20px;
+  --radius-button: 12px;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+// ==============================================================================
+// KEYFRAMES & ANIMACIONES GLOBALES
+// ==============================================================================
+
+@keyframes pulseOnline {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 168, 89, 0.6);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(0, 168, 89, 0);
+    transform: scale(1.08);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 168, 89, 0);
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes alertGlow {
+  0% {
+    border-color: rgba(229, 36, 33, 0.2);
+    box-shadow: 0 0 0 0 rgba(229, 36, 33, 0.1);
+  }
+  50% {
+    border-color: rgba(229, 36, 33, 0.8);
+    box-shadow: 0 0 15px rgba(229, 36, 33, 0.2);
+  }
+  100% {
+    border-color: rgba(229, 36, 33, 0.2);
+    box-shadow: 0 0 0 0 rgba(229, 36, 33, 0.1);
+  }
+}
+
+@keyframes shimmerEffect {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  70% {
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page-container {
+  padding: 1.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-card);
+  padding: 1.5rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    box-shadow: var(--shadow-hover);
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: var(--brand-green-light);
+  color: var(--brand-green);
+}
+
+.badge-danger {
+  background: var(--brand-red-light);
+  color: var(--brand-red);
+}
+
+.badge-warning {
+  background: var(--brand-gold-light);
+  color: var(--brand-gold);
+}
+
+.badge-proveedor {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.badge-cliente {
+  background: var(--brand-green-light);
+  color: var(--brand-dark-emerald);
+}
+
+.sin-tara {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+.tara-celda {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+

@@ -1,0 +1,116 @@
+<div class="page-container">
+  <div class="no-print acciones-ticket">
+    <button pButton icon="pi pi-arrow-left" label="Volver" class="p-button-text" routerLink="/tickets" (click)="$event.stopPropagation()"></button>
+    <button pButton icon="pi pi-print" label="Imprimir" (click)="imprimir()"></button>
+  </div>
+
+  @if (pesaje(); as p) {
+    <div
+      class="ticket card"
+      [class.tam-media-carta]="tamanoTicket() === 'MediaCarta'"
+      [class.tam-termica-58]="tamanoTicket() === 'Termica58'"
+      [class.tam-termica-80]="tamanoTicket() === 'Termica80'"
+      [class.estilo-texto]="estiloTicket() === 'Texto'"
+    >
+      <div class="ticket-header">
+        <div class="empresa">
+          <div class="empresa-nombre">{{ nombreEmpresa() }}</div>
+          @if (direccionEmpresa()) {
+            <div class="empresa-detalle">{{ direccionEmpresa() }}</div>
+          }
+          @if (rucEmpresa()) {
+            <div class="empresa-detalle">RUC: {{ rucEmpresa() }}</div>
+          }
+          <div class="ticket-numero">Ticket de Pesaje N° {{ p.numTran }}{{ soloIngreso() ? ' · Ingreso' : '' }}</div>
+        </div>
+        @if (qrDataUrl(); as qr) {
+          @if (mostrarQr()) {
+            <img class="qr" [src]="qr" alt="QR ticket" />
+          }
+        }
+      </div>
+
+      <div class="ticket-linea"></div>
+
+      <div class="ticket-grid">
+        <div><span>Placa:</span> {{ p.vehPlaca }}</div>
+        <div><span>Marca:</span> {{ vehiculo()?.marca || '-' }}</div>
+        <div><span>{{ etiquetaTercero() }}:</span> {{ cliente()?.nombre || '-' }}</div>
+        <div><span>Identificación:</span> {{ cliente()?.identificacion || '-' }}</div>
+        <div><span>Chofer:</span> {{ p.nombreChofer || '-' }}</div>
+        <div><span>Producto:</span> {{ producto()?.nombre || '-' }}</div>
+      </div>
+
+      <div class="ticket-linea"></div>
+
+      <div class="ticket-etapas">
+        <div class="etapa">
+          <div class="etapa-titulo"><i class="pi pi-sign-in"></i> Entrada</div>
+          <div class="etapa-dato"><span>Fecha:</span> {{ p.fechaHoraIn | date: 'dd/MM/yyyy HH:mm:ss' }}</div>
+          <div class="etapa-dato"><span>Báscula:</span> {{ nombreBascula(p.balId) }}</div>
+          <div class="etapa-dato"><span>Operador:</span> {{ nombreOperador(p.usuIngId) }}</div>
+          @if (p.tipoOperacion === 'Carga') {
+            <div class="etapa-dato destacado"><span>Tara guardada:</span> {{ p.pesoTara | number: '1.0-2' }} kg</div>
+          } @else {
+            <div class="etapa-dato destacado"><span>Peso Bruto:</span> {{ p.pesoBruto | number: '1.0-2' }} kg</div>
+          }
+        </div>
+        <div class="etapa">
+          <div class="etapa-titulo"><i class="pi pi-sign-out"></i> Salida</div>
+          @if (p.fechaHoraOut && !soloIngreso()) {
+            <div class="etapa-dato"><span>Fecha:</span> {{ p.fechaHoraOut | date: 'dd/MM/yyyy HH:mm:ss' }}</div>
+            <div class="etapa-dato"><span>Báscula:</span> {{ nombreBascula(p.balIdSalida ?? p.balId) }}</div>
+            <div class="etapa-dato"><span>Operador:</span> {{ nombreOperador(p.usuSalId) }}</div>
+            @if (p.tipoOperacion === 'Carga') {
+              <div class="etapa-dato destacado"><span>Peso Bruto:</span> {{ p.pesoBruto | number: '1.0-2' }} kg</div>
+            } @else {
+              <div class="etapa-dato destacado"><span>Peso Tara:</span> {{ p.pesoTara | number: '1.0-2' }} kg</div>
+            }
+          } @else {
+            <div class="etapa-pendiente">Pendiente</div>
+          }
+        </div>
+      </div>
+
+      <div class="ticket-linea"></div>
+
+      <div class="ticket-resultado">
+        @if (!soloIngreso()) {
+          <div class="resultado-item destacado">
+            <span class="label">Peso Neto</span>
+            <span class="valor">{{ p.pesoNeto | number: '1.0-2' }} kg</span>
+          </div>
+          <div class="resultado-item">
+            <span class="label">Tiempo en patio</span>
+            <span class="valor">{{ tiempoEnPatio() }}</span>
+          </div>
+        } @else {
+          <div class="resultado-item destacado">
+            <span class="label">Peso Bruto</span>
+            <span class="valor">{{ p.pesoBruto | number: '1.0-2' }} kg</span>
+          </div>
+        }
+      </div>
+
+      @if (p.observacion) {
+        <div class="ticket-linea"></div>
+        <div class="observacion"><span>Observaciones:</span> {{ p.observacion }}</div>
+      }
+
+      <div class="ticket-linea"></div>
+
+      <div class="ticket-firmas">
+        <div class="firma">
+          <div class="firma-linea"></div>
+          <span>Firma Chofer</span>
+        </div>
+        <div class="firma">
+          <div class="firma-linea"></div>
+          <span>Firma Operador</span>
+        </div>
+      </div>
+
+      <div class="ticket-footer">Documento generado por el Sistema de Balanza Camionera</div>
+    </div>
+  }
+</div>

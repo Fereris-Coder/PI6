@@ -1,0 +1,335 @@
+<div class="page-container">
+  <div class="page-header">
+    <button pButton icon="pi pi-arrow-left" label="Volver al inicio" class="p-button-text" (click)="volverAlInicio()"></button>
+  </div>
+
+  <!-- BÁSCULA CONECTADA EN VIVO -->
+  <div class="basculas-grid">
+    @for (bascula of basculas(); track bascula.id) {
+      <div
+        class="card bascula-card"
+        [class.seleccionada]="balanzaSeleccionadaId() === bascula.id"
+        (click)="seleccionarBascula(bascula.id)"
+      >
+        <div class="bascula-header">
+          <div class="bascula-nombre">
+            <i class="pi pi-truck"></i>
+            <span>{{ bascula.nombre | uppercase }}</span>
+          </div>
+          <p-tag
+            [value]="bascula.estado === EstadoConexion.Conectada ? 'Conectada' : bascula.estado === EstadoConexion.Conectando ? 'Conectando' : 'Desconectada'"
+            [severity]="bascula.estado === EstadoConexion.Conectada ? 'success' : bascula.estado === EstadoConexion.Conectando ? 'warn' : 'danger'"
+          ></p-tag>
+        </div>
+
+        @if (balanzaSeleccionadaId() === bascula.id) {
+          <div class="bascula-seleccionada-badge"><i class="pi pi-check-circle"></i> Balanza activa para pesaje</div>
+        }
+
+        <div class="bascula-peso">
+          <span class="valor">{{ (bascula.ultimaLectura?.peso ?? 0) | number: '1.0-2' }}</span>
+          <span class="unidad">{{ bascula.ultimaLectura?.unidad ?? 'kg' }}</span>
+        </div>
+
+        <svg class="sparkline" viewBox="0 0 300 40" preserveAspectRatio="none">
+          <polyline [attr.points]="sparklinePoints(bascula.id)" fill="none" stroke="#22c55e" stroke-width="2"></polyline>
+        </svg>
+
+        <div class="bascula-footer">
+          <span class="estable-indicator">
+            <span class="dot" [class.online]="!bascula.ultimaLectura?.enMovimiento" [class.warning]="bascula.ultimaLectura?.enMovimiento"></span>
+            {{ bascula.ultimaLectura?.enMovimiento ? 'En movimiento' : 'Estable' }}
+          </span>
+          <span class="ultima-lectura">
+            Última lectura: {{ bascula.ultimaLectura?.fechaHoraUtc ? (bascula.ultimaLectura!.fechaHoraUtc | date: 'HH:mm:ss') : '—' }}
+          </span>
+        </div>
+      </div>
+    } @empty {
+      <div class="card">No hay básculas activas configuradas.</div>
+    }
+  </div>
+
+  <!-- FORMULARIO GUIADO -->
+  <div class="registro-grid">
+    <div class="card form-principal-card">
+
+      <!-- PASO 1: SELECCIÓN DEL ACTOR -->
+      <div class="flujo-selector-wrap">
+        <label class="seccion-label">1. TIPO DE OPERACIÓN</label>
+        <div class="flujo-buttons">
+          <button
+            type="button"
+            class="btn-flujo btn-proveedor"
+            [class.activo]="tipoFlujo() === 'Proveedor'"
+            (click)="seleccionarTipoFlujo('Proveedor')"
+          >
+            <div class="flujo-icon-pill">📥</div>
+            <div class="flujo-info">
+              <span class="flujo-title">PROVEEDOR (ENTREGA GRANOS)</span>
+              <span class="flujo-desc">Entra lleno con Granos → Descarga en tolvas → Sale vacío (Tara)</span>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            class="btn-flujo btn-cliente"
+            [class.activo]="tipoFlujo() === 'Cliente'"
+            (click)="seleccionarTipoFlujo('Cliente')"
+          >
+            <div class="flujo-icon-pill">📤</div>
+            <div class="flujo-info">
+              <span class="flujo-title">CLIENTE (SE LLEVA COSECHA)</span>
+              <span class="flujo-desc">Entra vacío (Tara) → Carga Cosecha → Sale lleno con información del despacho</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 2: MOMENTO DEL PESAJE -->
+      <div class="paso-selector-wrap">
+        <label class="seccion-label">2. MOMENTO DEL PESAJE</label>
+        <div class="paso-buttons">
+          <button
+            type="button"
+            class="btn-paso"
+            [class.activo]="pasoOperacion() === 'Entrada'"
+            (click)="seleccionarPaso('Entrada')"
+          >
+            <i class="pi pi-sign-in"></i>
+            <div>
+              <strong>Pesaje 1: Entrada a Planta</strong>
+              <small>{{ tipoFlujo() === 'Proveedor' ? 'Camión cargado con Granos (Peso Bruto)' : 'Camión vacío: Pesar Tara O Usar Tara Registrada' }}</small>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            class="btn-paso"
+            [class.activo]="pasoOperacion() === 'Salida'"
+            (click)="seleccionarPaso('Salida')"
+          >
+            <i class="pi pi-sign-out"></i>
+            <div>
+              <strong>Pesaje 2: Salida y Liquidación</strong>
+              <small>{{ tipoFlujo() === 'Proveedor' ? 'Camión vacío (Cierre Tara)' : 'Camión cargado: Registro completo de Cosecha y Ticket' }}</small>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- OPCIÓN DE ENTRADA PARA CLIENTE: PESAR VACÍO VS TARA GUARDADA -->
+      @if (tipoFlujo() === 'Cliente' && pasoOperacion() === 'Entrada') {
+        <div class="modo-salida-toggle">
+          <button
+            pButton
+            label="Pesar camión vacío en báscula"
+            class="p-button-sm"
+            [class.p-button-outlined]="modoEntradaCliente() !== 'pesar_vacio'"
+            (click)="seleccionarModoEntradaCliente('pesar_vacio')"
+          ></button>
+          <button
+            pButton
+            label="Pasar directo con Tara Guardada"
+            class="p-button-sm"
+            [class.p-button-outlined]="modoEntradaCliente() !== 'tara_guardada'"
+            (click)="seleccionarModoEntradaCliente('tara_guardada')"
+          ></button>
+        </div>
+      }
+
+      <!-- ========================================================================= -->
+      <!-- CASO 1: ENTRADA PROVEEDOR O SALIDA CLIENTE (DONDE SE CAPTURAN TODOS LOS DATOS) -->
+      <!-- ========================================================================= -->
+      @if ((tipoFlujo() === 'Proveedor' && pasoOperacion() === 'Entrada') || (tipoFlujo() === 'Cliente' && pasoOperacion() === 'Salida')) {
+        <div class="form-grid two-columns">
+          <div class="field">
+            <label>Placa del Camión *</label>
+            <p-autocomplete
+              [(ngModel)]="placaSeleccionada"
+              (ngModelChange)="onPlacaCambio($event)"
+              [suggestions]="sugerenciasPlaca"
+              (completeMethod)="buscarPlaca($event)"
+              (onSelect)="onPlacaCambio($event.value)"
+              (onClear)="limpiarCamposCamion()"
+              [dropdown]="true"
+              placeholder="Digite o elija placa (ej: GBA-1011)"
+            ></p-autocomplete>
+            @if (tipoFlujo() === 'Cliente' && placaSeleccionada) {
+              @if (puedeUsarTaraGuardadaEntrada()) {
+                <small class="hint destacado">Tara base registrada: {{ vehiculoDePlacaSeleccionada()?.taraKg | number: '1.0-2' }} kg</small>
+              }
+            }
+          </div>
+
+          <div class="field">
+            <label>{{ tipoFlujo() === 'Proveedor' ? 'Proveedor de Granos *' : 'Cliente de Cosecha *' }}</label>
+            <p-select
+              [options]="tercerosFiltrados()"
+              optionLabel="etiqueta"
+              optionValue="id"
+              [(ngModel)]="cliIdSeleccionado"
+              (onChange)="onTerceroCambioManualmente($event.value)"
+              [placeholder]="tipoFlujo() === 'Proveedor' ? 'Seleccione Proveedor' : 'Seleccione Cliente'"
+              [filter]="true"
+              filterBy="etiqueta"
+            ></p-select>
+          </div>
+
+          <div class="field">
+            <label>Chofer del Camión</label>
+            <input pInputText [(ngModel)]="nombreChofer" placeholder="Nombre y Apellido del chofer" />
+          </div>
+
+          <div class="field">
+            <label>{{ tipoFlujo() === 'Proveedor' ? 'Grano a Entregar *' : 'Cosecha a Despachar *' }}</label>
+            <p-select
+              [options]="productosFiltrados()"
+              optionLabel="nombre"
+              optionValue="codigo"
+              [(ngModel)]="proCodigoSeleccionado"
+              [placeholder]="tipoFlujo() === 'Proveedor' ? 'Seleccione Grano' : 'Seleccione Cosecha'"
+              [filter]="true"
+              filterBy="nombre"
+            ></p-select>
+          </div>
+
+          <div class="field" style="grid-column: 1 / -1">
+            <label>Observaciones de Operación</label>
+            <input pInputText [(ngModel)]="observacion" placeholder="Guía de remisión, lote o notas de báscula" />
+          </div>
+        </div>
+      }
+
+      <!-- ========================================================================= -->
+      <!-- CASO 2: ENTRADA CLIENTE (CAMIÓN VACÍO) -->
+      <!-- ========================================================================= -->
+      @else if (tipoFlujo() === 'Cliente' && pasoOperacion() === 'Entrada') {
+        <div class="form-grid">
+          <div class="field">
+            <label>Placa del Camión que Entra Vacío *</label>
+            <p-autocomplete
+              [ngModel]="placaSeleccionada"
+              (ngModelChange)="onPlacaCambio($event)"
+              [suggestions]="sugerenciasPlaca"
+              (completeMethod)="buscarPlaca($event)"
+              (onSelect)="onPlacaCambio($event.value)"
+              [dropdown]="true"
+              placeholder="Digite o elija placa (ej: PBA-8899)"
+            ></p-autocomplete>
+          </div>
+
+          @if (modoEntradaCliente() === 'tara_guardada') {
+            @if (placaSeleccionada) {
+              @if (puedeUsarTaraGuardadaEntrada()) {
+                <div class="resumen-entrada-abierta">
+                  <span>Tara Registrada Vigente: <strong>{{ vehiculoDePlacaSeleccionada()?.taraKg | number: '1.0-2' }} kg</strong></span>
+                  <span>Vehículo: <strong>{{ vehiculoDePlacaSeleccionada()?.marca }} {{ vehiculoDePlacaSeleccionada()?.modelo }}</strong></span>
+                </div>
+                <small class="hint destacado">El camión puede pasar directo a cargar cosecha. Se registrará la información en el Pesaje 2 (Salida).</small>
+              } @else {
+                <small class="hint aviso">Este vehículo no tiene tara guardada en el catálogo. Cámbiese a "Pesar camión vacío en báscula".</small>
+              }
+            }
+          } @else {
+            <div class="form-grid two-columns">
+              <div class="field">
+                <label>Cliente *</label>
+                <p-select [options]="tercerosFiltrados()" optionLabel="etiqueta" optionValue="id" [(ngModel)]="cliIdSeleccionado" placeholder="Seleccione Cliente" [filter]="true" filterBy="etiqueta"></p-select>
+              </div>
+              <div class="field">
+                <label>Cosecha a Cargar *</label>
+                <p-select [options]="productosFiltrados()" optionLabel="nombre" optionValue="codigo" [(ngModel)]="proCodigoSeleccionado" placeholder="Seleccione Cosecha" [filter]="true" filterBy="nombre"></p-select>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ========================================================================= -->
+      <!-- CASO 3: SALIDA PROVEEDOR (CAMIÓN VACÍO / TARA FINAL) -->
+      <!-- ========================================================================= -->
+      @else if (tipoFlujo() === 'Proveedor' && pasoOperacion() === 'Salida') {
+        <div class="form-grid">
+          <div class="field">
+            <label>Transacción de Entrada a Liquidar *</label>
+            <p-select
+              [ngModel]="numTranSeleccionado"
+              (ngModelChange)="numTranSeleccionado = $event; onCambioTransaccion()"
+              [options]="opcionesPesajesAbiertos()"
+              optionLabel="etiqueta"
+              optionValue="numTran"
+              placeholder="Seleccione el camión de granos a liquidar"
+            ></p-select>
+          </div>
+
+          @if (pesajeAbiertoSeleccionado(); as pesajeAbierto) {
+            <div class="resumen-entrada-abierta">
+              <span class="info-tag">Peso Bruto Entrada (Granos): <strong>{{ pesajeAbierto.pesoBruto | number: '1.0-2' }} kg</strong></span>
+              <span class="info-tag">Chofer: <strong>{{ pesajeAbierto.nombreChofer || 'No registrado' }}</strong></span>
+            </div>
+
+            @if (puedeUsarTaraGuardadaSalida()) {
+              <div class="tara-check">
+                <p-checkbox [(ngModel)]="usarTaraGuardadaSalida" [binary]="true" inputId="usarTaraSalida"></p-checkbox>
+                <label for="usarTaraSalida">Usar Tara Guardada del Camión ({{ vehiculoDePesajeAbierto()?.taraKg | number: '1.0-2' }} kg)</label>
+              </div>
+            }
+          }
+        </div>
+      }
+
+      <!-- BOTONES DE ACCIÓN -->
+      <div class="form-actions">
+        <button pButton label="Limpiar" icon="pi pi-refresh" class="p-button-outlined" (click)="limpiar()"></button>
+        <button
+          pButton
+          [label]="(tipoFlujo() === 'Cliente' && pasoOperacion() === 'Salida') || (tipoFlujo() === 'Proveedor' && pasoOperacion() === 'Salida') ? 'Cerrar y Emitir Ticket Oficial' : 'Registrar Pesaje 1 (Entrada)'"
+          icon="pi pi-check"
+          [loading]="guardando()"
+          (click)="guardarPesaje()"
+        ></button>
+      </div>
+    </div>
+
+    <!-- PANEL RESUMEN -->
+    <div class="card resumen-card">
+      <h3>Resumen de Báscula</h3>
+
+      <div class="resumen-flujo-badge" [class.badge-prov]="tipoFlujo() === 'Proveedor'" [class.badge-cli]="tipoFlujo() === 'Cliente'">
+        <span>{{ tipoFlujo() === 'Proveedor' ? '📥 COMPRA GRANOS (PROVEEDOR)' : '📤 DESPACHO COSECHA (CLIENTE)' }}</span>
+      </div>
+
+      <div class="resumen-items">
+        <div class="resumen-item">
+          <span class="label">Báscula Activa:</span>
+          <span class="valor">{{ balanzaSeleccionada()?.nombre || 'Ninguna' }}</span>
+        </div>
+
+        <div class="resumen-item">
+          <span class="label">Peso en Vivo:</span>
+          <span class="valor highlight">{{ (pesoActualBascula() ?? 0) | number: '1.0-2' }} kg</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="resumen-item">
+          <span class="label">Peso Bruto (Lleno):</span>
+          <span class="valor">{{ pesoBrutoResumen() != null ? ((pesoBrutoResumen()!) | number: '1.0-2') + ' kg' : 'Pendiente' }}</span>
+        </div>
+
+        <div class="resumen-item">
+          <span class="label">Peso Tara (Vacío):</span>
+          <span class="valor">{{ pesoTaraResumen() != null ? ((pesoTaraResumen()!) | number: '1.0-2') + ' kg' : 'Pendiente' }}</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="resumen-item neto-total">
+          <span class="label">{{ tipoFlujo() === 'Proveedor' ? 'Neto Granos Comprados:' : 'Neto Cosecha Despachada:' }}</span>
+          <span class="valor neto-val">{{ calcularPesoNeto() | number: '1.0-2' }} kg</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

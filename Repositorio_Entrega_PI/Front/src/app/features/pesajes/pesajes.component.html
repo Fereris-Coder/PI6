@@ -1,0 +1,68 @@
+<div class="page-container">
+  <h1 class="page-title">Pesajes</h1>
+
+  <div class="card">
+    <p-toolbar styleClass="mb-3">
+      <ng-template pTemplate="start">
+        <div class="filtros">
+          <div class="field">
+            <label>Desde</label>
+            <p-datepicker [(ngModel)]="desde" dateFormat="dd/mm/yy"></p-datepicker>
+          </div>
+          <div class="field">
+            <label>Hasta</label>
+            <p-datepicker [(ngModel)]="hasta" dateFormat="dd/mm/yy"></p-datepicker>
+          </div>
+          <button pButton label="Buscar" icon="pi pi-search" (click)="buscar()"></button>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="end">
+        <button pButton label="Nuevo Pesaje" icon="pi pi-plus" (click)="nuevoPesaje()"></button>
+      </ng-template>
+    </p-toolbar>
+
+    <p-table [value]="pesajes()" [loading]="cargando()" [paginator]="true" [rows]="15" dataKey="numTran">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>N° Transacción</th>
+          <th>Entrada</th>
+          <th>Salida</th>
+          <th>Placa</th>
+          <th>Cliente</th>
+          <th>Producto</th>
+          <th>Estado</th>
+          <th>Peso Bruto</th>
+          <th>Peso Tara</th>
+          <th>Peso Neto</th>
+          <th style="width: 9rem">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-pesaje>
+        <tr>
+          <td>{{ pesaje.numTran }}</td>
+          <td>{{ pesaje.fechaHoraIn | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ pesaje.fechaHoraOut ? (pesaje.fechaHoraOut | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
+          <td>{{ pesaje.vehPlaca }}</td>
+          <td>{{ nombreCliente(pesaje.cliId) }}</td>
+          <td>{{ nombreProducto(pesaje.proCodigo) }}</td>
+          <td>
+            <p-tag [value]="pesaje.fechaHoraOut ? 'Completado' : 'En patio'" [severity]="pesaje.fechaHoraOut ? 'success' : 'warn'"></p-tag>
+          </td>
+          <td>{{ pesaje.pesoBruto | number: '1.0-2' }} kg</td>
+          <td>{{ pesaje.pesoTara | number: '1.0-2' }} kg</td>
+          <td>{{ pesaje.pesoNeto | number: '1.0-2' }} kg</td>
+          <td>
+            <button pButton icon="pi pi-receipt" class="p-button-text p-button-sm" title="Reimprimir ticket" (click)="verTicket(pesaje)"></button>
+            @if (!pesaje.fechaHoraOut) {
+              <button pButton icon="pi pi-sign-out" class="p-button-text p-button-sm p-button-warning" title="Registrar salida" (click)="irACerrarSalida(pesaje)"></button>
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="11" style="text-align:center">No hay pesajes en el rango seleccionado.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+

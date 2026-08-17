@@ -1,0 +1,182 @@
+<div class="page-container">
+  <div class="page-header no-print">
+    <a routerLink="/reportes" class="volver-link"><i class="pi pi-arrow-left"></i> Volver a Reportes</a>
+  </div>
+  <h1 class="page-title">Reporte General de Pesajes</h1>
+  <p class="page-subtitle">Transacciones por producto, cliente y proveedor</p>
+
+  <div class="card no-print filtros-card">
+    <div class="filtros-grid">
+      <div class="field">
+        <label>Desde</label>
+        <p-datepicker [(ngModel)]="desde" dateFormat="dd/mm/yy"></p-datepicker>
+      </div>
+      <div class="field">
+        <label>Hasta</label>
+        <p-datepicker [(ngModel)]="hasta" dateFormat="dd/mm/yy"></p-datepicker>
+      </div>
+      <div class="field">
+        <label>Cliente / Proveedor / Transportista</label>
+        <p-select
+          [options]="clientes()"
+          optionLabel="nombre"
+          optionValue="id"
+          [(ngModel)]="terceroId"
+          placeholder="Todos"
+          [filter]="true"
+          filterBy="nombre"
+          [showClear]="true"
+          appendTo="body"
+        ></p-select>
+      </div>
+      <div class="field">
+        <label>Producto</label>
+        <p-select
+          [options]="productos()"
+          optionLabel="nombre"
+          optionValue="codigo"
+          [(ngModel)]="proCodigo"
+          placeholder="Todos"
+          [filter]="true"
+          filterBy="nombre"
+          [showClear]="true"
+          appendTo="body"
+        ></p-select>
+      </div>
+      <div class="field">
+        <label>Placa</label>
+        <p-select
+          [options]="vehiculos()"
+          optionLabel="placa"
+          optionValue="placa"
+          [(ngModel)]="vehPlaca"
+          placeholder="Todas"
+          [filter]="true"
+          filterBy="placa"
+          [showClear]="true"
+          appendTo="body"
+        ></p-select>
+      </div>
+      <div class="field">
+        <label>Báscula</label>
+        <p-select [options]="basculas()" optionLabel="descripcion" optionValue="id" [(ngModel)]="balId" placeholder="Todas" [showClear]="true" appendTo="body"></p-select>
+      </div>
+      <div class="field">
+        <label>Operador</label>
+        <p-select
+          [options]="usuarios()"
+          optionLabel="nombreCompleto"
+          optionValue="id"
+          [(ngModel)]="usuId"
+          placeholder="Todos"
+          [filter]="true"
+          filterBy="nombreCompleto"
+          [showClear]="true"
+          appendTo="body"
+        ></p-select>
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <p-select [options]="opcionesEstado" optionLabel="label" optionValue="value" [(ngModel)]="estado" appendTo="body"></p-select>
+      </div>
+    </div>
+    <div class="filtros-acciones">
+      <button pButton label="Buscar" icon="pi pi-search" (click)="buscar()"></button>
+      <button pButton label="Limpiar filtros" icon="pi pi-filter-slash" class="p-button-text" (click)="limpiarFiltros()"></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <p-toolbar styleClass="mb-3 no-print">
+      <ng-template pTemplate="start">
+        <div class="resumen-toolbar">
+          <span><strong>{{ totalRegistros() }}</strong> registros</span>
+          <span><strong>{{ totalNeto() | number: '1.0-2' }}</strong> kg netos</span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="end">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" [(ngModel)]="filtroGlobal" (input)="tabla.filterGlobal(filtroGlobal, 'contains')" placeholder="Buscar en resultados..." />
+        </p-iconfield>
+        <button pButton icon="pi pi-print" label="Imprimir" class="p-button-text" (click)="imprimir()"></button>
+        <button pButton icon="pi pi-file-pdf" label="PDF" class="p-button-text" (click)="exportarPdf()"></button>
+        <button pButton icon="pi pi-file-excel" label="Excel" class="p-button-text" (click)="exportarExcel()"></button>
+      </ng-template>
+    </p-toolbar>
+
+    <p-table
+      #tabla
+      [value]="filas()"
+      [loading]="cargando()"
+      [paginator]="true"
+      [rows]="20"
+      dataKey="numTran"
+      [globalFilterFields]="['placa', 'terceroNombre', 'producto', 'estado']"
+      rowGroupMode="subheader"
+      groupRowsBy="terceroNombre"
+      [scrollable]="true"
+      scrollHeight="600px"
+      styleClass="reporte-tabla"
+    >
+      <ng-template pTemplate="groupheader" let-fila>
+        <tr class="fila-grupo">
+          <td colspan="14"> <span class="grupo-etiqueta">{{ fila.terceroLabel }}:</span> {{ fila.terceroNombre }} </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>N° Tran.</th>
+          <th>Fecha Entrada</th>
+          <th>Fecha Salida</th>
+          <th>Placa</th>
+          <th>Producto</th>
+          <th>Báscula Ent.</th>
+          <th>Operador Ent.</th>
+          <th>Báscula Sal.</th>
+          <th>Operador Sal.</th>
+          <th>Peso Bruto</th>
+          <th>Peso Tara</th>
+          <th>Peso Neto</th>
+          <th>Estado</th>
+          <th style="width: 4rem">Ticket</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-fila>
+        <tr>
+          <td>{{ fila.numTran }}</td>
+          <td>{{ fila.fechaHoraIn | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ fila.fechaHoraOut ? (fila.fechaHoraOut | date: 'dd/MM/yyyy HH:mm') : 'Pendiente' }}</td>
+          <td>{{ fila.placa }}</td>
+          <td>{{ fila.producto }}</td>
+          <td>{{ fila.basculaEntrada }}</td>
+          <td>{{ fila.operadorEntrada }}</td>
+          <td>{{ fila.basculaSalida }}</td>
+          <td>{{ fila.operadorSalida }}</td>
+          <td>{{ fila.pesoBruto | number: '1.0-2' }} kg</td>
+          <td>{{ fila.pesoTara | number: '1.0-2' }} kg</td>
+          <td><strong>{{ fila.pesoNeto | number: '1.0-2' }} kg</strong></td>
+          <td><p-tag [value]="fila.estado" [severity]="fila.estado === 'Completado' ? 'success' : 'warn'"></p-tag></td>
+          <td>
+            <button pButton icon="pi pi-receipt" class="p-button-text p-button-sm" title="Ver ticket" (click)="verTicket(fila.numTran)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="groupfooter" let-fila>
+        <tr class="fila-subtotal">
+          <td colspan="11" style="text-align: right">Subtotal {{ fila.terceroNombre }}:</td>
+          <td colspan="3"><strong>{{ subtotalPorTercero(fila.terceroNombre) | number: '1.0-2' }} kg</strong></td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <tr class="fila-total">
+          <td colspan="11" style="text-align: right">TOTAL GENERAL:</td>
+          <td colspan="3"><strong>{{ totalNeto() | number: '1.0-2' }} kg</strong> ({{ totalRegistros() }} registros)</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="14" style="text-align: center">No hay pesajes que coincidan con los filtros seleccionados.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

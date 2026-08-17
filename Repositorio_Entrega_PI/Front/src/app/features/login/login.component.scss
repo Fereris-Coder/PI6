@@ -1,0 +1,320 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.login-page {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+// ---------- Panel izquierdo (marca) ----------
+
+.login-hero {
+  flex: 1.1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 3rem 3.5rem;
+  background: linear-gradient(155deg, #0b1e4d 0%, #1d4ed8 65%, #2563eb 100%);
+  color: #fff;
+  overflow: hidden;
+
+  &::before {
+    // Franja diagonal más clara, tipo "wedge" de luz
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 55%, rgba(255, 255, 255, 0.08) 56%, rgba(255, 255, 255, 0.08) 62%, transparent 63%);
+  }
+
+  &::after {
+    // Textura de puntos en la mitad derecha, como el mockup
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 55%;
+    height: 100%;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1.5px, transparent 1.5px);
+    background-size: 22px 22px;
+    -webkit-mask-image: linear-gradient(135deg, transparent 40%, #000 60%);
+    mask-image: linear-gradient(135deg, transparent 40%, #000 60%);
+  }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 460px;
+}
+
+.hero-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.login-brand-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 4px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-logo-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.hexagon-icon {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.hero-title {
+  display: flex;
+  flex-direction: column;
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+}
+
+.hero-underline {
+  width: 56px;
+  height: 4px;
+  background: #22c55e;
+  border-radius: 2px;
+  margin-bottom: 1.25rem;
+}
+
+.hero-subtitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+}
+
+.hero-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 3rem;
+}
+
+.hero-features {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+
+  i {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  strong {
+    display: block;
+    font-size: 0.9rem;
+  }
+
+  span {
+    display: block;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.72);
+  }
+}
+
+// ---------- Panel derecho (formulario) ----------
+
+.login-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 2rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.card-avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.3);
+}
+
+.login-card h2 {
+  margin: 0 0 0.3rem;
+  font-size: 1.4rem;
+  color: #1e293b;
+}
+
+.card-subtitle {
+  margin: 0 0 1.5rem;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.field {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 1rem;
+
+  label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.35rem;
+  }
+}
+
+.input-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0 0.75rem;
+  transition: border-color 0.15s ease;
+
+  &:focus-within {
+    border-color: #1d4ed8;
+  }
+
+  i:not(.toggle-eye) {
+    color: #94a3b8;
+    font-size: 0.95rem;
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0.7rem 0.6rem;
+    font-size: 0.92rem;
+    background: transparent;
+  }
+
+  .toggle-eye {
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 0.95rem;
+
+    &:hover {
+      color: #475569;
+    }
+  }
+}
+
+.field-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  font-size: 0.82rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #334155;
+
+  label {
+    cursor: pointer;
+  }
+}
+
+.forgot-link {
+  color: #1d4ed8;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.login-btn {
+  width: 100%;
+  justify-content: center;
+  background: #16a34a;
+  border-color: #16a34a;
+  padding: 0.75rem;
+  font-weight: 600;
+
+  &:hover {
+    background: #15803d;
+    border-color: #15803d;
+  }
+}
+
+.card-divider {
+  width: 100%;
+  border-top: 1px solid #e5e7eb;
+  margin: 1.25rem 0 1rem;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+:host ::ng-deep .p-message {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 900px) {
+  .login-hero {
+    display: none;
+  }
+}

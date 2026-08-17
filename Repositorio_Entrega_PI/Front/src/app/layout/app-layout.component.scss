@@ -1,0 +1,222 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 64px 1fr;
+  grid-template-areas:
+    'topbar topbar'
+    'sidebar content';
+  height: 100vh;
+}
+
+.topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1.5rem;
+  background: linear-gradient(90deg, #1e3a8a, #1d4ed8);
+  color: #fff;
+  z-index: 10;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 208px;
+}
+
+.brand-logo-img {
+  height: 42px;
+  width: 42px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.brand-icon {
+  font-size: 1.6rem;
+  background: #fff;
+  color: #1d4ed8;
+  border-radius: 8px;
+  padding: 0.4rem;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brand-subtitle {
+  font-size: 0.7rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.topbar-page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.topbar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.15rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.sidebar {
+  grid-area: sidebar;
+  background: #fff;
+  border-right: 1px solid #e5e9f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  color: #475569;
+  text-decoration: none;
+  font-size: 0.95rem;
+  border-left: 3px solid transparent;
+
+  i {
+    font-size: 1rem;
+    width: 1.1rem;
+  }
+
+  &:hover {
+    background: #f1f5f9;
+  }
+
+  &.active {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-left-color: #1d4ed8;
+    font-weight: 600;
+  }
+}
+
+.sidebar-footer {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.system-status {
+  padding: 0.85rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.status-title {
+  font-weight: 600;
+  color: #1e293b;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.3rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  &.online {
+    background: #22c55e;
+  }
+
+  &.offline {
+    background: #ef4444;
+  }
+
+  &.warning {
+    background: #f59e0b;
+  }
+}
+
+.version {
+  text-align: center;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.content {
+  grid-area: content;
+  overflow-y: auto;
+  background: #f4f6fb;
+}
+
+// Al imprimir (p.ej. el ticket de pesaje) no tiene sentido sacar el menú/topbar:
+// solo debe verse el contenido de la página.
+@media print {
+  :host {
+    height: auto;
+  }
+
+  .layout {
+    display: block;
+    height: auto;
+  }
+
+  .topbar,
+  .sidebar {
+    display: none !important;
+  }
+
+  .content {
+    overflow: visible;
+    background: #fff;
+  }
+}

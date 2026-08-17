@@ -1,0 +1,255 @@
+<div class="page-container">
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-title">Gestión de Flota y Vehículos</h1>
+      <p class="page-subtitle">Control de 18 camiones con taras certificadas y específicas por tipo de producto (Granos y Cosecha)</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <p-toolbar styleClass="mb-3">
+      <ng-template pTemplate="start">
+        <button pButton icon="pi pi-plus" label="Nuevo Vehículo" (click)="nuevo()"></button>
+      </ng-template>
+      <ng-template pTemplate="end">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" [(ngModel)]="filtroGlobal" (input)="tabla.filterGlobal(filtroGlobal, 'contains')" placeholder="Buscar placa, chofer, marca..." />
+        </p-iconfield>
+      </ng-template>
+    </p-toolbar>
+
+    <p-table #tabla [value]="vehiculos()" [loading]="cargando()" [paginator]="true" [rows]="10" [globalFilterFields]="['placa','marca','modelo','choferHabitual','tipoUso']" dataKey="placa">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Placa</th>
+          <th>Tipo / Actor</th>
+          <th>Proveedor / Cliente Perteneciente</th>
+          <th>Chofer Habitual</th>
+          <th>Marca / Modelo</th>
+          <th>Config. MTOP</th>
+          <th>Taras por Producto</th>
+          <th>Estado</th>
+          <th style="width: 9rem">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-vehiculo>
+        <tr>
+          <td>
+            <strong class="placa-badge">{{ vehiculo.placa }}</strong>
+          </td>
+          <td>
+            <span class="badge" [class.badge-proveedor]="vehiculo.tipoUso === 'Proveedor'" [class.badge-cliente]="vehiculo.tipoUso === 'Cliente'">
+              {{ vehiculo.tipoUso === 'Proveedor' ? '📥 Proveedor' : '📤 Cliente' }}
+            </span>
+          </td>
+          <td>
+            <div class="empresa-cell">
+              <i class="pi pi-building" style="color: #64748b; font-size: 0.85rem;"></i>
+              <strong>{{ nombreTercero(vehiculo.cliId) }}</strong>
+            </div>
+          </td>
+          <td>
+            <strong>{{ vehiculo.choferHabitual || '—' }}</strong>
+          </td>
+          <td>{{ vehiculo.marca || '-' }} {{ vehiculo.modelo ? '/ ' + vehiculo.modelo : '' }}</td>
+          <td>{{ vehiculo.numeroEjes }} Ejes ({{ vehiculo.tipoConfiguracion || '-' }})</td>
+          <td>
+            <div class="taras-resumen-col">
+              @if (vehiculo.tarasPorProducto && vehiculo.tarasPorProducto.length > 0) {
+                <div class="taras-chips">
+                  @for (tara of vehiculo.tarasPorProducto; track tara.id) {
+                    <div class="tara-chip" [class.tara-vigente]="tara.taraVigente" [class.tara-vencida]="!tara.taraVigente" [title]="'Vence en ' + tara.diasRestantes + ' días'">
+                      <span class="chip-prod">{{ tara.productoNombre }}:</span>
+                      <strong class="chip-kg">{{ tara.taraKg | number: '1.0-0' }} kg</strong>
+                      <small class="chip-dias">({{ tara.diasRestantes }}d)</small>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <span class="sin-tara">Sin taras específicas</span>
+              }
+            </div>
+          </td>
+          <td>
+            <span class="badge" [class.badge-success]="vehiculo.estado" [class.badge-danger]="!vehiculo.estado">
+              {{ vehiculo.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td>
+            <button pButton icon="pi pi-sliders-h" class="p-button-text p-button-sm p-button-success" title="Gestionar Taras por Producto" (click)="abrirDialogoTarasPorProducto(vehiculo)"></button>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm" (click)="editar(vehiculo)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="eliminar(vehiculo)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="9" style="text-align:center">No hay vehículos registrados.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- MODAL: GESTIÓN COMPLETA DE TARAS POR PRODUCTO -->
+<p-dialog 
+  [visible]="mostrarDialogoTaras()" 
+  (visibleChange)="mostrarDialogoTaras.set($event)" 
+  [modal]="true" 
+  [style]="{ width: '680px' }" 
+  header="Taras Definidas por Producto"
+>
+  @if (vehiculoSeleccionadoParaTaras; as veh) {
+    <div class="tara-dialog-container">
+      <div class="veh-info-banner">
+        <div class="veh-info-item">
+          <span class="label">Placa:</span>
+          <strong>{{ veh.placa }}</strong>
+        </div>
+        <div class="veh-info-item">
+          <span class="label">Empresa / Actor:</span>
+          <strong>{{ nombreTercero(veh.cliId) }}</strong>
+        </div>
+        <div class="veh-info-item">
+          <span class="label">Chofer:</span>
+          <strong>{{ veh.choferHabitual || 'No asignado' }}</strong>
+        </div>
+        <div class="veh-info-item">
+          <span class="label">Uso:</span>
+          <span class="badge" [class.badge-proveedor]="veh.tipoUso === 'Proveedor'" [class.badge-cliente]="veh.tipoUso === 'Cliente'">
+            {{ veh.tipoUso === 'Proveedor' ? '📥 Proveedor (Granos)' : '📤 Cliente (Cosecha)' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- TABLA DE TARAS EXISTENTES -->
+      <h4>Taras Registradas para este Camión</h4>
+      <div class="tabla-taras-wrap">
+        <table class="tabla-taras-custom">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Tara Certificada</th>
+              <th>Fecha Registro</th>
+              <th>Vigencia</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (tara of tarasDelVehiculo(); track tara.id) {
+              <tr>
+                <td><strong>{{ tara.productoNombre }}</strong></td>
+                <td><span class="tara-val-destacado">{{ tara.taraKg | number: '1.0-2' }} kg</span></td>
+                <td>{{ tara.taraFecha | date: 'dd/MM/yyyy' }}</td>
+                <td>
+                  <span class="dias-badge" [class.dias-ok]="tara.diasRestantes > 5" [class.dias-alerta]="tara.diasRestantes <= 5 && tara.diasRestantes > 0" [class.dias-vencido]="tara.diasRestantes === 0">
+                    {{ tara.diasRestantes > 0 ? (tara.diasRestantes + ' días restantes') : 'Caducada' }}
+                  </span>
+                </td>
+                <td>
+                  <p-tag [value]="tara.taraVigente ? 'Vigente' : 'Caducada'" [severity]="tara.taraVigente ? 'success' : 'danger'"></p-tag>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="5" style="text-align: center; color: #94a3b8;">No hay taras asignadas a este camión.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- FORMULARIO PARA REGISTRAR/ACTUALIZAR TARA DE UN PRODUCTO -->
+      <div class="nueva-tara-section">
+        <h4>Registrar / Actualizar Tara por Producto</h4>
+        
+        @if (basculaSeleccionada(); as b) {
+          <div class="bascula-live-mini">
+            <div>
+              <span class="label">Báscula en Vivo ({{ b.nombre }}):</span>
+              <strong class="peso-live">{{ (pesoActualBascula() ?? 0) | number: '1.0-2' }} kg</strong>
+            </div>
+            <button pButton label="Copiar peso de báscula" icon="pi pi-arrow-down" class="p-button-sm p-button-outlined" (click)="copiarPesoDeBascula()"></button>
+          </div>
+        }
+
+        <div class="form-grid three-columns">
+          <div class="field">
+            <label>Producto *</label>
+            <p-select 
+              [options]="productosDisponiblesParaVehiculo()" 
+              optionLabel="nombre" 
+              optionValue="codigo" 
+              [(ngModel)]="nuevoProCodigo" 
+              placeholder="Seleccione Producto"
+            ></p-select>
+          </div>
+
+          <div class="field">
+            <label>Tara (kg) *</label>
+            <p-inputnumber [(ngModel)]="nuevoTaraKg" [min]="100" [max]="50000" placeholder="Ej: 11200"></p-inputnumber>
+          </div>
+
+          <div class="field">
+            <label>Vigencia (Días)</label>
+            <p-inputnumber [(ngModel)]="nuevaVigenciaDias" [min]="1" [max]="365" placeholder="30"></p-inputnumber>
+          </div>
+        </div>
+
+        <div class="action-taras-btn">
+          <button pButton label="Guardar Tara para Producto" icon="pi pi-check" [loading]="guardandoTaraProducto()" (click)="guardarTaraProducto()"></button>
+        </div>
+      </div>
+    </div>
+  }
+  <ng-template pTemplate="footer">
+    <button pButton label="Cerrar" class="p-button-text" (click)="mostrarDialogoTaras.set(false)"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- MODAL: EDITAR / NUEVO VEHÍCULO -->
+<p-dialog [visible]="mostrarDialogo()" (visibleChange)="mostrarDialogo.set($event)" [modal]="true" [style]="{ width: '540px' }" [header]="esNuevo() ? 'Nuevo Vehículo' : 'Editar Vehículo'">
+  <div class="form-grid two-columns">
+    <div class="field">
+      <label>Placa *</label>
+      <input pInputText [(ngModel)]="entidad.placa" [disabled]="!esNuevo()" placeholder="Ejm: GBA-1011" />
+    </div>
+    <div class="field">
+      <label>Tipo de Actor *</label>
+      <p-select [options]="opcionesTipoUso" optionLabel="label" optionValue="value" [(ngModel)]="entidad.tipoUso"></p-select>
+    </div>
+    <div class="field">
+      <label>{{ entidad.tipoUso === 'Proveedor' ? 'Proveedor de Granos *' : 'Cliente de Cosecha *' }}</label>
+      <p-select 
+        [options]="clientesFiltradosPorUso()" 
+        optionLabel="nombre" 
+        optionValue="id" 
+        [(ngModel)]="entidad.cliId" 
+        [placeholder]="entidad.tipoUso === 'Proveedor' ? 'Seleccione Proveedor' : 'Seleccione Cliente'"
+        [filter]="true"
+        filterBy="nombre"
+      ></p-select>
+    </div>
+    <div class="field">
+      <label>Chofer Habitual</label>
+      <input pInputText [(ngModel)]="entidad.choferHabitual" placeholder="Nombre y Apellido" />
+    </div>
+    <div class="field">
+      <label>Marca</label>
+      <input pInputText [(ngModel)]="entidad.marca" placeholder="Ejm: Hino, Volvo" />
+    </div>
+    <div class="field">
+      <label>Modelo</label>
+      <input pInputText [(ngModel)]="entidad.modelo" placeholder="Ejm: 500 Series, FH 460" />
+    </div>
+    <div class="field">
+      <label>Configuración MTOP *</label>
+      <p-select [options]="opcionesConfigMtop" [(ngModel)]="entidad.tipoConfiguracion" placeholder="Seleccione configuración"></p-select>
+    </div>
+    <div class="field field-inline" style="grid-column: 1 / -1">
+      <label>Vehículo Activo</label>
+      <p-toggleswitch [(ngModel)]="entidad.estado"></p-toggleswitch>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="mostrarDialogo.set(false)"></button>
+    <button pButton label="Guardar" icon="pi pi-check" (click)="guardar()"></button>
+  </ng-template>
+</p-dialog>

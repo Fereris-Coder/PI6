@@ -1,0 +1,230 @@
+<div class="dashboard-wrapper">
+  
+  <!-- ========================================================================= -->
+  <!-- HEADER PRINCIPAL: LOGO OFICIAL "EL TROJE" + PERFIL GERENCIAL            -->
+  <!-- ========================================================================= -->
+  <header class="top-header">
+    <div class="brand-area">
+      <img src="assets/el_troje_logo.png" alt="El Troje - Tu verdadera solución" class="brand-logo" />
+    </div>
+
+    <div class="header-actions">
+      <div class="live-status-pill">
+        <span class="live-dot"></span>
+        <span class="status-text">Balanza IND780: En Línea</span>
+      </div>
+
+      <div class="user-profile-badge">
+        <div class="avatar-circle">
+          <i class="pi pi-user"></i>
+        </div>
+        <div class="user-meta">
+          <span class="user-name">Hacienda El Troje</span>
+          <span class="user-role">Panel Gerencial</span>
+        </div>
+      </div>
+
+      <div class="date-picker-wrap">
+        <p-datepicker [(ngModel)]="fechaSeleccionada" dateFormat="dd/mm/yy" (ngModelChange)="cargarPesajes()"></p-datepicker>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- FILA 1: TARJETAS KPI SUPERIORES (4 MÉTRICAS EN ESPAÑOL Y EN TIEMPO REAL)  -->
+  <!-- ========================================================================= -->
+  <section class="kpi-row">
+    <!-- Card 1: Total Pesajes -->
+    <div class="card kpi-card animated-card">
+      <div class="kpi-card-header">
+        <span class="kpi-title">Total Pesajes</span>
+        <div class="kpi-icon-wrap">
+          <i class="pi pi-inbox"></i>
+        </div>
+      </div>
+      <div class="kpi-card-body">
+        <span class="kpi-value">{{ totalPesajesReal() }}</span>
+        <span class="kpi-subtext">operaciones hoy ({{ pesajesCerradosReal() }} cerradas)</span>
+      </div>
+    </div>
+
+    <!-- Card 2: Compras Netas -->
+    <div class="card kpi-card animated-card">
+      <div class="kpi-card-header">
+        <span class="kpi-title">Compras Netas (Proveedor)</span>
+        <div class="kpi-icon-wrap icon-green">
+          <i class="pi pi-arrow-down-left"></i>
+        </div>
+      </div>
+      <div class="kpi-card-body">
+        <span class="kpi-value">{{ comprasNetasFormateadas() }}</span>
+        <span class="kpi-subtext">Materia prima ingresada</span>
+      </div>
+    </div>
+
+    <!-- Card 3: Despachos Netos -->
+    <div class="card kpi-card animated-card">
+      <div class="kpi-card-header">
+        <span class="kpi-title">Despachos Netos (Clientes)</span>
+        <div class="kpi-icon-wrap icon-blue">
+          <i class="pi pi-arrow-up-right"></i>
+        </div>
+      </div>
+      <div class="kpi-card-body">
+        <span class="kpi-value">{{ despachosNetosFormateados() }}</span>
+        <span class="kpi-subtext">Producto terminado</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Merma Promedio -->
+    <div class="card kpi-card animated-card">
+      <div class="kpi-card-header">
+        <span class="kpi-title">Merma Promedio</span>
+        <div class="kpi-icon-wrap icon-gold">
+          <i class="pi pi-chart-pie"></i>
+        </div>
+      </div>
+      <div class="kpi-card-body">
+        <span class="kpi-value" [class.text-danger]="mermaPromedioNum() > 4.0">{{ mermaPromedioFormateada() }}</span>
+        <span class="kpi-subtext">Tolerancia máx: 4.50%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- FILA 2: GRÁFICOS PRINCIPALES + ALERTA GERENCIAL REACTIVA                  -->
+  <!-- ========================================================================= -->
+  <section class="charts-row-middle">
+    
+    <!-- Gráfico 1: Dona (Distribución por Producto) -->
+    <div class="card chart-card chart-donut-card animated-card">
+      <div class="card-heading">
+        <h3>Distribución de Granos (KG)</h3>
+      </div>
+      <div class="canvas-wrap-donut">
+        <canvas #chartDonut></canvas>
+      </div>
+    </div>
+
+    <!-- Gráfico 2: Barras Verticales (Entradas vs Salidas) -->
+    <div class="card chart-card chart-vertical-card animated-card">
+      <div class="card-heading">
+        <h3>Flujo de Carga (Neto KG)</h3>
+      </div>
+      <div class="canvas-wrap-vertical">
+        <canvas #chartVerticalBars></canvas>
+      </div>
+    </div>
+
+    <!-- Gráfico 3: Barras Horizontales (Volumen por Proveedor) -->
+    <div class="card chart-card chart-horizontal-card animated-card">
+      <div class="card-heading">
+        <h3>Ranking de Proveedores</h3>
+      </div>
+      <div class="canvas-wrap-horizontal">
+        <canvas #chartHorizontalBars></canvas>
+      </div>
+    </div>
+
+    <!-- Componente 4: Alerta Gerencial Interactiva Minimalista (Mobile-First) -->
+    <div class="card alert-notification-card animated-card" [class.alert-glow]="alertaActual()?.estado === 'PENDIENTE'">
+      @if (alertaActual()) {
+        <div class="alert-card-header">
+          <div class="alert-author">
+            <span class="alert-icon-pill">⚠️</span>
+            <div class="alert-title-wrap">
+              <span class="alert-main-title">Alerta IA: {{ alertaActual()!.tipo }}</span>
+              <span class="alert-subtitle">{{ alertaActual()!.actor }} · Placa {{ alertaActual()!.placa }}</span>
+            </div>
+          </div>
+          <button class="btn-close-alert" (click)="cerrarAlerta()" title="Cerrar">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+
+        <div class="alert-card-body">
+          <div class="alert-metric-row">
+            <span class="label">Producto:</span>
+            <span class="val">{{ alertaActual()!.producto }}</span>
+          </div>
+          <div class="alert-metric-row">
+            <span class="label">Merma Detectada:</span>
+            <span class="val highlight-red">{{ alertaActual()!.mermaPct | number:'1.2-2' }}% (Límite: 4.5%)</span>
+          </div>
+          <div class="alert-metric-row">
+            <span class="label">Exceso de Pérdida:</span>
+            <span class="val">+{{ alertaActual()!.excesoKg | number:'1.0-0' }} KG (${{ alertaActual()!.excesoUsd | number:'1.2-2' }})</span>
+          </div>
+        </div>
+
+        <div class="alert-actions-row">
+          @if (alertaActual()!.estado === 'PENDIENTE') {
+            <button class="btn-action btn-approve" (click)="aprobarAlerta()">
+              <i class="pi pi-check"></i> APROBAR DESCUENTO
+            </button>
+            <button class="btn-action btn-hold" (click)="retenerAlerta()">
+              <i class="pi pi-ban"></i> RETENER CAMIÓN
+            </button>
+          } @else if (alertaActual()!.estado === 'APROBADA') {
+            <div class="alert-status-msg msg-approved">
+              <i class="pi pi-check-circle"></i> APROBADO CON DESCUENTO SRI
+            </div>
+          } @else {
+            <div class="alert-status-msg msg-held">
+              <i class="pi pi-exclamation-triangle"></i> CAMIÓN RETENIDO PARA INSPECCIÓN
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="alert-empty-state">
+          <i class="pi pi-check-circle icon-empty"></i>
+          <span class="empty-title">Sin alertas pendientes</span>
+          <span class="empty-sub">Toda la operación dentro de parámetros normales</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- FILA 3: GRÁFICO DE LÍNEAS (PÉRDIDA DE MERMA) + CONTROL OPERATIVO         -->
+  <!-- ========================================================================= -->
+  <section class="charts-row-bottom">
+    
+    <!-- Gráfico 4: Day Loss (Líneas en Plano Cartesiano) -->
+    <div class="card chart-card chart-line-card animated-card">
+      <div class="line-card-header">
+        <h3>Evolución de Merma Diaria (% Pérdida)</h3>
+        <span class="threshold-legend"><span class="legend-line"></span> Tolerancia Máxima (4.50%)</span>
+      </div>
+      <div class="canvas-wrap-line">
+        <canvas #chartLineLoss></canvas>
+      </div>
+    </div>
+
+    <!-- Widget 5: Tarjeta de Eficiencia y Acceso a Zona de Pesajes -->
+    <div class="card efficiency-card animated-card">
+      <div class="efficiency-header">
+        <span class="efficiency-title">Eficiencia en Báscula</span>
+        <span class="badge badge-success">Óptimo</span>
+      </div>
+
+      <div class="efficiency-metrics">
+        <div class="metric-box">
+          <span class="metric-num">{{ tiempoPromedioMin() }}</span>
+          <span class="metric-lbl">Tiempo Promedio</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-num">{{ confiabilidadOperativa() }}</span>
+          <span class="metric-lbl">No Repudio SRI</span>
+        </div>
+      </div>
+
+      <button class="btn-go-weighing" (click)="irAZonaPesajes()">
+        <i class="pi pi-truck"></i>
+        <span>Ir a Zona de Pesajes</span>
+        <i class="pi pi-arrow-right icon-arrow"></i>
+      </button>
+    </div>
+  </section>
+
+</div>

@@ -1,0 +1,1 @@
+import{a as c}from"./chunk-XNIPSLI2.js";import{z as i}from"./chunk-WPIB7CS7.js";import{P as r,U as e}from"./chunk-7QMJEFD7.js";var n=class t extends c{constructor(o){super(o,"productos")}static \u0275fac=function(p){return new(p||t)(e(i))};static \u0275prov=r({token:t,factory:t.\u0275fac,providedIn:"root"})};export{n as a};

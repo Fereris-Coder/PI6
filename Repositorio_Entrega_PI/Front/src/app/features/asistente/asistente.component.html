@@ -1,0 +1,37 @@
+<div class="page-container">
+  <h1 class="page-title">Asistente IA</h1>
+
+  <div class="card chat-card">
+    <div class="chat-mensajes">
+      @for (m of mensajes(); track $index) {
+        <div class="mensaje" [class.mensaje-usuario]="m.autor === 'usuario'" [class.mensaje-asistente]="m.autor === 'asistente'">
+          <div class="burbuja" [class.burbuja-error]="m.esError">
+            <i class="pi" [class.pi-user]="m.autor === 'usuario'" [class.pi-sparkles]="m.autor === 'asistente'"></i>
+            <span class="texto">{{ m.texto }}</span>
+          </div>
+        </div>
+      }
+      @if (cargando()) {
+        <div class="mensaje mensaje-asistente">
+          <div class="burbuja burbuja-cargando">
+            <p-progressSpinner styleClass="spinner-chico" strokeWidth="6" />
+            <span class="texto">Consultando…</span>
+          </div>
+        </div>
+      }
+      <div #scrollAnchor></div>
+    </div>
+
+    <div class="chat-entrada">
+      <input
+        pInputText
+        type="text"
+        placeholder="Escribe tu pregunta..."
+        [(ngModel)]="pregunta"
+        (keydown.enter)="enviar()"
+        [disabled]="cargando()"
+      />
+      <button pButton icon="pi pi-send" [disabled]="cargando() || !pregunta.trim()" (click)="enviar()"></button>
+    </div>
+  </div>
+</div>

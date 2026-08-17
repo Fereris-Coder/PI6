@@ -1,0 +1,58 @@
+<div class="layout">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <img src="assets/el_troje_logo.png" alt="Hacienda El Troje" class="brand-logo-img" />
+      <div class="brand-text">
+        <span class="brand-title">EL TROJE</span>
+        <span class="brand-subtitle">PESAJUSTO</span>
+      </div>
+    </div>
+    <div class="topbar-page-title">
+      <i class="pi pi-bars"></i>
+      <span>Sistema de Balanza Camionera</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" type="button" pBadge value="3" severity="danger">
+        <i class="pi pi-bell"></i>
+      </button>
+      <div class="user-menu">
+        <p-avatar icon="pi pi-user" shape="circle" styleClass="user-avatar"></p-avatar>
+        <span class="user-name">{{ usuario()?.nombreUsuario || 'Usuario' }}</span>
+        <i class="pi pi-chevron-down" (click)="menu.toggle($event)"></i>
+        <p-menu #menu [model]="menuUsuario" [popup]="true"></p-menu>
+      </div>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <nav class="nav-list">
+      @for (item of navItems(); track item.route) {
+        <a
+          class="nav-item"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+        >
+          <i [class]="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="system-status card">
+        <span class="status-title">Estado del Sistema</span>
+        <div class="status-row">
+          <span class="dot online"></span>
+          <span>Conectado</span>
+        </div>
+        <small>Última actualización</small>
+        <small>{{ fechaActual | date: 'dd/MM/yyyy HH:mm:ss' }}</small>
+      </div>
+      <div class="version">© 2026 Balanza Camionera <br /> v1.0.0</div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

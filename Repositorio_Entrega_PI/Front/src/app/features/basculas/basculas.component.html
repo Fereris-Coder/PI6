@@ -1,0 +1,83 @@
+<div class="page-container">
+  <h1 class="page-title">Básculas</h1>
+
+  <div class="card">
+    <p-toolbar styleClass="mb-3">
+      <ng-template pTemplate="start">
+        <button pButton icon="pi pi-plus" label="Nueva Báscula" (click)="nuevo()"></button>
+      </ng-template>
+      <ng-template pTemplate="end">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" [(ngModel)]="filtroGlobal" (input)="tabla.filterGlobal(filtroGlobal, 'contains')" placeholder="Buscar..." />
+        </p-iconfield>
+      </ng-template>
+    </p-toolbar>
+
+    <p-table #tabla [value]="balanzas()" [loading]="cargando()" [paginator]="true" [rows]="10" [globalFilterFields]="['descripcion','ip','ubicacion']" dataKey="id">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Descripción</th>
+          <th>IP</th>
+          <th>Puerto</th>
+          <th>Ubicación</th>
+          <th>Activa</th>
+          <th>Conexión en vivo</th>
+          <th style="width: 8rem">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-balanza>
+        <tr>
+          <td>{{ balanza.descripcion }}</td>
+          <td>{{ balanza.ip }}</td>
+          <td>{{ balanza.puerto }}</td>
+          <td>{{ balanza.ubicacion || '-' }}</td>
+          <td>
+            <span class="badge" [class.badge-success]="balanza.estado" [class.badge-danger]="!balanza.estado">
+              {{ balanza.estado ? 'Activa' : 'Inactiva' }}
+            </span>
+          </td>
+          <td>
+            <p-tag [value]="estadoConexion(balanza.id)" [severity]="severidadEstado(balanza.id)"></p-tag>
+          </td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm" (click)="editar(balanza)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="eliminar(balanza)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="7" style="text-align:center">No hay básculas registradas.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [visible]="mostrarDialogo()" (visibleChange)="mostrarDialogo.set($event)" [modal]="true" [style]="{ width: '450px' }" [header]="esNuevo() ? 'Nueva Báscula' : 'Editar Báscula'">
+  <div class="form-grid">
+    <div class="field">
+      <label>Descripción *</label>
+      <input pInputText [(ngModel)]="entidad.descripcion" />
+    </div>
+    <div class="field">
+      <label>IP *</label>
+      <input pInputText [(ngModel)]="entidad.ip" placeholder="Ejm: 127.0.0.1" />
+    </div>
+    <div class="field">
+      <label>Puerto *</label>
+      <p-inputnumber [(ngModel)]="entidad.puerto" [useGrouping]="false"></p-inputnumber>
+    </div>
+    <div class="field">
+      <label>Ubicación</label>
+      <input pInputText [(ngModel)]="entidad.ubicacion" />
+    </div>
+    <div class="field field-inline">
+      <label>Activa</label>
+      <p-toggleswitch [(ngModel)]="entidad.estado"></p-toggleswitch>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="mostrarDialogo.set(false)"></button>
+    <button pButton label="Guardar" icon="pi pi-check" (click)="guardar()"></button>
+  </ng-template>
+</p-dialog>

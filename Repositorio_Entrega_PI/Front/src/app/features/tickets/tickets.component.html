@@ -1,0 +1,56 @@
+<div class="page-container">
+  <h1 class="page-title">Tickets</h1>
+
+  <div class="card">
+    <p-table
+      #tabla
+      [value]="pesajes()"
+      [loading]="cargando()"
+      [paginator]="true"
+      [rows]="15"
+      [globalFilterFields]="['vehPlaca']"
+      dataKey="numTran"
+    >
+      <ng-template pTemplate="caption">
+        <div style="display:flex; justify-content:flex-end">
+          <p-iconfield>
+            <p-inputicon class="pi pi-search" />
+            <input pInputText type="text" [(ngModel)]="filtroGlobal" (input)="tabla.filterGlobal(filtroGlobal, 'contains')" placeholder="Buscar por placa..." />
+          </p-iconfield>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>N° Transacción</th>
+          <th>Fecha</th>
+          <th>Placa</th>
+          <th>Cliente</th>
+          <th>Producto</th>
+          <th>Estado</th>
+          <th style="width: 7rem">Ticket</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-pesaje>
+        <tr>
+          <td>{{ pesaje.numTran }}</td>
+          <td>{{ pesaje.fechaHoraIn | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ pesaje.vehPlaca }}</td>
+          <td>{{ nombreCliente(pesaje.cliId) }}</td>
+          <td>{{ nombreProducto(pesaje.proCodigo) }}</td>
+          <td>
+            <p-tag [value]="pesaje.fechaHoraOut ? 'Completado' : 'En patio'" [severity]="pesaje.fechaHoraOut ? 'success' : 'warn'"></p-tag>
+          </td>
+          <td>
+            <button pButton icon="pi pi-sign-in" class="p-button-text p-button-sm" title="Ticket de ingreso" (click)="abrirTicketIngreso(pesaje)"></button>
+            @if (pesaje.fechaHoraOut) {
+              <button pButton icon="pi pi-sign-out" class="p-button-text p-button-sm" title="Ticket de salida" (click)="abrirTicket(pesaje)"></button>
+            }
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="7" style="text-align:center">No hay pesajes registrados.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

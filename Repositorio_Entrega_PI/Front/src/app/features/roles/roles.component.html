@@ -1,0 +1,87 @@
+<div class="page-container">
+  <h1 class="page-title">Perfiles</h1>
+  <p class="page-subtitle">Perfiles de acceso y los módulos que cada uno puede usar</p>
+
+  <div class="card">
+    <p-toolbar styleClass="mb-3">
+      <ng-template pTemplate="start">
+        <button pButton icon="pi pi-plus" label="Nuevo Perfil" (click)="nuevo()"></button>
+      </ng-template>
+      <ng-template pTemplate="end">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" [(ngModel)]="filtroGlobal" (input)="tabla.filterGlobal(filtroGlobal, 'contains')" placeholder="Buscar..." />
+        </p-iconfield>
+      </ng-template>
+    </p-toolbar>
+
+    <p-table #tabla [value]="roles()" [loading]="cargando()" [paginator]="true" [rows]="10" [globalFilterFields]="['nombre','descripcion']" dataKey="id">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Módulos permitidos</th>
+          <th>Estado</th>
+          <th style="width: 8rem">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rol>
+        <tr>
+          <td>{{ rol.nombre }}</td>
+          <td>{{ rol.descripcion || '-' }}</td>
+          <td>{{ etiquetasModulos(rol.modulos) }}</td>
+          <td>
+            <span class="badge" [class.badge-success]="rol.estado" [class.badge-danger]="!rol.estado">
+              {{ rol.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm" (click)="editar(rol)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="eliminar(rol)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="5" style="text-align:center">No hay perfiles registrados.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [visible]="mostrarDialogo()" (visibleChange)="mostrarDialogo.set($event)" [modal]="true" [style]="{ width: '520px' }" [header]="esNuevo() ? 'Nuevo Perfil' : 'Editar Perfil'">
+  <div class="form-grid">
+    <div class="field">
+      <label>Nombre *</label>
+      <input pInputText [(ngModel)]="entidad.nombre" placeholder="Ejm: Operador" />
+    </div>
+    <div class="field">
+      <label>Descripción</label>
+      <input pInputText [(ngModel)]="entidad.descripcion" placeholder="Ejm: Pesaje diario en báscula" />
+    </div>
+    <div class="field">
+      <label>Módulos permitidos</label>
+      <small class="hint">"Inicio" siempre está disponible para cualquier usuario.</small>
+      <div class="modulos-grid">
+        @for (m of modulosDisponibles; track m.clave) {
+          <div class="modulo-check">
+            <p-checkbox
+              [ngModel]="moduloSeleccionado(m.clave)"
+              (ngModelChange)="alternarModulo(m.clave, $event)"
+              [binary]="true"
+              [inputId]="'mod-' + m.clave"
+            ></p-checkbox>
+            <label [for]="'mod-' + m.clave">{{ m.etiqueta }}</label>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="field field-inline">
+      <label>Activo</label>
+      <p-toggleswitch [(ngModel)]="entidad.estado"></p-toggleswitch>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="mostrarDialogo.set(false)"></button>
+    <button pButton label="Guardar" icon="pi pi-check" (click)="guardar()"></button>
+  </ng-template>
+</p-dialog>

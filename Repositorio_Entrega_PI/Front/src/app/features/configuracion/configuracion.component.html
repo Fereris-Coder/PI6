@@ -1,0 +1,107 @@
+<div class="page-container">
+  <h1 class="page-title">Configuración</h1>
+
+  <div class="card ayuda-card">
+    <button type="button" class="ayuda-header" (click)="mostrarAyuda.set(!mostrarAyuda())">
+      <span><i class="pi pi-info-circle"></i> Parámetros que reconoce el sistema</span>
+      <i class="pi" [class.pi-chevron-up]="mostrarAyuda()" [class.pi-chevron-down]="!mostrarAyuda()"></i>
+    </button>
+    @if (mostrarAyuda()) {
+      <div class="ayuda-tabla-wrap">
+        <table class="ayuda-tabla">
+          <thead>
+            <tr>
+              <th>Parámetro</th>
+              <th>Valores válidos</th>
+              <th>Para qué sirve</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of parametrosConocidos; track p.clave) {
+              <tr>
+                <td><code>{{ p.clave }}</code></td>
+                <td>{{ p.valores }}</td>
+                <td>{{ p.descripcion }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <small class="hint">El "Parámetro" debe escribirse exactamente así (mayúsculas y minúsculas incluidas). Si un parámetro no existe en la tabla de abajo, el sistema usa el valor por defecto indicado.</small>
+      </div>
+    }
+  </div>
+
+  <div class="card">
+    <p-toolbar styleClass="mb-3">
+      <ng-template pTemplate="start">
+        <button pButton icon="pi pi-plus" label="Nuevo Parámetro" (click)="nuevo()"></button>
+      </ng-template>
+      <ng-template pTemplate="end">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" [(ngModel)]="filtroGlobal" (input)="tabla.filterGlobal(filtroGlobal, 'contains')" placeholder="Buscar..." />
+        </p-iconfield>
+      </ng-template>
+    </p-toolbar>
+
+    <p-table #tabla [value]="configuraciones()" [loading]="cargando()" [paginator]="true" [rows]="10" [globalFilterFields]="['parametro','valor']" dataKey="id">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Parámetro</th>
+          <th>Valor</th>
+          <th>Estado</th>
+          <th style="width: 8rem">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-config>
+        <tr>
+          <td>{{ config.parametro }}</td>
+          <td>{{ config.valor }}</td>
+          <td>
+            <span class="badge" [class.badge-success]="config.estado" [class.badge-danger]="!config.estado">
+              {{ config.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm" (click)="editar(config)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="eliminar(config)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="4" style="text-align:center">No hay parámetros de configuración.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [visible]="mostrarDialogo()" (visibleChange)="mostrarDialogo.set($event)" [modal]="true" [style]="{ width: '460px' }" [header]="esNuevo() ? 'Nuevo Parámetro' : 'Editar Parámetro'">
+  <div class="form-grid">
+    <div class="field">
+      <label>Parámetro *</label>
+      <p-select [options]="opcionesParametro" optionLabel="label" optionValue="value" [(ngModel)]="parametroDropdown" placeholder="Seleccione un parámetro"></p-select>
+    </div>
+    @if (parametroDropdown === OTRO) {
+      <div class="field">
+        <label>Nombre del parámetro *</label>
+        <input pInputText [(ngModel)]="entidad.parametro" placeholder="Se guarda tal cual lo escribas" />
+      </div>
+    }
+    <div class="field">
+      <label>Valor *</label>
+      @if (valoresParaValor(); as opciones) {
+        <p-select [options]="opciones" optionLabel="label" optionValue="value" [(ngModel)]="entidad.valor" placeholder="Seleccione un valor"></p-select>
+      } @else {
+        <input pInputText [(ngModel)]="entidad.valor" />
+      }
+    </div>
+    <div class="field field-inline">
+      <label>Activo</label>
+      <p-toggleswitch [(ngModel)]="entidad.estado"></p-toggleswitch>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="mostrarDialogo.set(false)"></button>
+    <button pButton label="Guardar" icon="pi pi-check" (click)="guardar()"></button>
+  </ng-template>
+</p-dialog>

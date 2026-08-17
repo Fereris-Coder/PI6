@@ -1,0 +1,89 @@
+<div class="page-container">
+  <h1 class="page-title">Usuarios</h1>
+
+  <div class="card">
+    <p-toolbar styleClass="mb-3">
+      <ng-template pTemplate="start">
+        <button pButton icon="pi pi-plus" label="Nuevo Usuario" (click)="nuevo()"></button>
+      </ng-template>
+      <ng-template pTemplate="end">
+        <p-iconfield>
+          <p-inputicon class="pi pi-search" />
+          <input pInputText type="text" [(ngModel)]="filtroGlobal" (input)="tabla.filterGlobal(filtroGlobal, 'contains')" placeholder="Buscar..." />
+        </p-iconfield>
+      </ng-template>
+    </p-toolbar>
+
+    <p-table #tabla [value]="usuarios()" [loading]="cargando()" [paginator]="true" [rows]="10" [globalFilterFields]="['nombreUsuario','nombreCompleto','correo']" dataKey="id">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Usuario</th>
+          <th>Nombre completo</th>
+          <th>Correo</th>
+          <th>Turno</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th style="width: 8rem">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-usuario>
+        <tr>
+          <td>{{ usuario.nombreUsuario }}</td>
+          <td>{{ usuario.nombreCompleto }}</td>
+          <td>{{ usuario.correo || '-' }}</td>
+          <td>{{ usuario.turno || '-' }}</td>
+          <td>{{ nombreRol(usuario.rolId) }}</td>
+          <td>
+            <span class="badge" [class.badge-success]="usuario.estado" [class.badge-danger]="!usuario.estado">
+              {{ usuario.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm" (click)="editar(usuario)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="eliminar(usuario)"></button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr><td colspan="7" style="text-align:center">No hay usuarios registrados.</td></tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog [visible]="mostrarDialogo()" (visibleChange)="mostrarDialogo.set($event)" [modal]="true" [style]="{ width: '450px' }" [header]="esNuevo() ? 'Nuevo Usuario' : 'Editar Usuario'">
+  <div class="form-grid">
+    <div class="field">
+      <label>Usuario *</label>
+      <input pInputText [(ngModel)]="entidad.nombreUsuario" />
+    </div>
+    <div class="field">
+      <label>Nombre completo *</label>
+      <input pInputText [(ngModel)]="entidad.nombreCompleto" />
+    </div>
+    <div class="field">
+      <label>Contraseña *</label>
+      <p-password [(ngModel)]="entidad.passwordHash" [feedback]="false" [toggleMask]="true" styleClass="full-width" [inputStyle]="{ width: '100%' }"></p-password>
+    </div>
+    <div class="field">
+      <label>Correo</label>
+      <input pInputText [(ngModel)]="entidad.correo" />
+    </div>
+    <div class="field">
+      <label>Turno</label>
+      <input pInputText [(ngModel)]="entidad.turno" placeholder="Ejm: Mañana" />
+    </div>
+    <div class="field">
+      <label>Rol *</label>
+      <p-select [options]="roles()" optionLabel="nombre" optionValue="id" [(ngModel)]="entidad.rolId" placeholder="Seleccione rol"></p-select>
+    </div>
+    <div class="field field-inline">
+      <label>Activo</label>
+      <p-toggleswitch [(ngModel)]="entidad.estado"></p-toggleswitch>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="mostrarDialogo.set(false)"></button>
+    <button pButton label="Guardar" icon="pi pi-check" (click)="guardar()"></button>
+  </ng-template>
+</p-dialog>
