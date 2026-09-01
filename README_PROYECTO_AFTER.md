@@ -6,15 +6,16 @@
 
 ---
 
-## 📁 Mapa de Entregables Oficiales por Asignatura (Formato PDF y Código Fuente)
+## 📁 Mapa de Entregables Oficiales por Asignatura (Formatos Word .docx y PDF .pdf)
 
-El presente repositorio consolida la entrega final del Proyecto Integrador, estructurado de forma modular y conforme a los requerimientos de las 6 asignaturas del nivel:
+El presente repositorio consolida la entrega final del Proyecto Integrador, estructurado con entrega dual de documentos (**Word editable y PDF final**) conforme a los requerimientos de la tutora y las 6 asignaturas del nivel:
 
 ```text
 Proyecto after/
 │
 ├── 00_Entregable_General_Documento_Final/
-│   ├── Grupo4-Final_Documento_Oficial_PI.pdf           # Memoria Técnica Oficial Integradora (APA 7)
+│   ├── Grupo4-Final_Documento_Oficial_PI.docx          # Memoria Técnica Oficial Integradora (Word editable)
+│   ├── Grupo4-Final_Documento_Oficial_PI.pdf           # Memoria Técnica Oficial Integradora (PDF final)
 │   └── Documento_Memoria_Final_Firmado.pdf             # Respaldo Documental y Legal Firmado
 │
 ├── 01_Diseno_y_Arquitectura_de_Software/
@@ -39,16 +40,19 @@ Proyecto after/
 │
 ├── 04_Inteligencia_de_Negocios/
 │   ├── Tablero_PowerBI_Pesajes_ElTroje.pbix            # Tablero dimensional estrella y 4 KPIs de producción
-│   └── Informe_Modelado_Dimensional_BI.pdf             # Memoria técnica de arquitectura OLTP vs OLAP
+│   ├── Informe_Modelado_Dimensional_BI.docx            # Memoria técnica de arquitectura OLTP vs OLAP (Word)
+│   └── Informe_Modelado_Dimensional_BI.pdf             # Memoria técnica de arquitectura OLTP vs OLAP (PDF)
 │
 ├── 05_Proyectos_Informaticos/
 │   └── Planificacion_Sprints_MSProject.mpp             # EDT/WBS, cronograma de Sprints y matriz de riesgos
 │
 ├── 06_Gestion_Empresarial_y_Emprendimiento/
-│   ├── Estudio_de_Mercado_y_Factibilidad_PesaJusto.pdf # Estudio de factibilidad técnica, operativa y financiera
+│   ├── Estudio_de_Mercado_y_Factibilidad_PesaJusto.docx# Estudio de factibilidad (Word)
+│   ├── Estudio_de_Mercado_y_Factibilidad_PesaJusto.pdf # Estudio de factibilidad (PDF)
+│   ├── Ensayo_Academico_Control_Vehicular.docx         # Ensayo académico sobre impacto agroindustrial (Word)
+│   ├── Ensayo_Academico_Control_Vehicular.pdf          # Ensayo académico sobre impacto agroindustrial (PDF)
 │   ├── Diapositivas_Sustentacion_Oficial.pptx          # Presentación oficial para la defensa oral universitaria
-│   ├── Presentacion_Defensa_PesaJusto.pptx             # Presentación complementaria del producto de software
-│   └── Ensayo_Academico_Control_Vehicular.pdf          # Ensayo académico sobre impacto agroindustrial
+│   └── Presentacion_Defensa_PesaJusto.pptx             # Presentación complementaria del producto de software
 │
 └── 07_Paquete_Despliegue_e_Instalador/
     └── BalanzaCamionera.iss                            # Script Inno Setup para empaquetado del instalador

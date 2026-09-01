@@ -35,10 +35,10 @@ export class AppLayoutComponent {
     { label: 'Perfiles', icon: 'pi pi-shield', route: '/roles', modulo: 'usuarios' },
     { label: 'Reportes', icon: 'pi pi-chart-bar', route: '/reportes', modulo: 'reportes' },
     { label: 'Configuración', icon: 'pi pi-cog', route: '/configuracion', modulo: 'configuracion' },
-    { label: 'Asistente IA', icon: 'pi pi-sparkles', route: '/asistente', modulo: 'asistente' }
+    { label: 'Asistente IA', icon: 'pi pi-sparkles', route: '/asistente' }
   ];
 
-  // 'Inicio' (sin modulo) siempre queda visible; el resto depende de los
+  // 'Inicio' y 'Asistente IA' quedan siempre visibles para el usuario; el resto depende de los
   // módulos habilitados en el perfil del usuario logueado.
   readonly navItems = computed(() => this.todosLosNavItems.filter((item) => !item.modulo || this.auth.tieneModulo(item.modulo)));
 

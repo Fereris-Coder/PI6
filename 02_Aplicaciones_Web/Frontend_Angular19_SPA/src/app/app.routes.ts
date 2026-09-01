@@ -100,8 +100,6 @@ export const routes: Routes = [
       },
       {
         path: 'asistente',
-        canActivate: [permisoGuard],
-        data: { modulo: 'asistente' },
         loadComponent: () => import('./features/asistente/asistente.component').then((m) => m.AsistenteComponent)
       }
     ]
