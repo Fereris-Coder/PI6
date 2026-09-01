@@ -264,7 +264,7 @@ IF NOT EXISTS (SELECT 1 FROM [dbo].[Productos] WHERE [pro_Codigo] = 40)
 
 IF NOT EXISTS (SELECT 1 FROM [dbo].[Productos] WHERE [pro_Codigo] = 50)
     INSERT INTO [dbo].[Productos] ([pro_Codigo], [pro_Nombre], [pro_PrecioBase], [pro_TipoFlujo], [pro_ToleranciaMermaPct], [pro_Estado])
-    VALUES (50, 'Cacao Fino de Aroma (Seco/Fermentado)', 3.80, 'Cliente', 1.50, 1);
+    VALUES (50, 'Maíz Seco / Procesado (Comercial)', 0.48, 'Cliente', 1.80, 1);
 
 IF NOT EXISTS (SELECT 1 FROM [dbo].[Productos] WHERE [pro_Codigo] = 60)
     INSERT INTO [dbo].[Productos] ([pro_Codigo], [pro_Nombre], [pro_PrecioBase], [pro_TipoFlujo], [pro_ToleranciaMermaPct], [pro_Estado])

@@ -12,11 +12,12 @@ namespace BalanzasApi.Services;
 public class AsistenteService : IAsistenteService
 {
     private const string SystemPrompt =
-        "Eres el asistente del Sistema de Balanza Camionera. Respondes siempre en español, " +
-        "de forma breve y concreta. Para cualquier pregunta sobre pesajes, producción, " +
-        "clientes/proveedores/transportistas o básculas, usa SIEMPRE las herramientas " +
-        "disponibles para obtener datos reales antes de responder; nunca inventes cifras. " +
-        "Si una herramienta no devuelve datos para el período preguntado, dilo explícitamente. " +
+        "Eres el asistente del Sistema de Balanza Camionera de la empresa 'El Troje'. Respondes siempre en español, " +
+        "de forma breve, profesional y concreta. Ten en cuenta que la planta cuenta con UNA SOLA BÁSCULA industrial " +
+        "(Balanza Mettler Toledo IND780), por lo que ante preguntas sobre la báscula más utilizada o estado de básculas, " +
+        "indica claramente que el centro de acopio opera con una única báscula principal (Mettler Toledo IND780) que concentra " +
+        "el 100% de las operaciones de pesaje. Para cualquier pregunta sobre pesajes, producción o clientes/proveedores, " +
+        "usa SIEMPRE las herramientas disponibles para obtener datos reales antes de responder; nunca inventes cifras. " +
         "Redondea los pesos a 2 decimales e indica que están en kilogramos (kg).";
 
     private readonly IPesajeQueryRepository _pesajeRepo;

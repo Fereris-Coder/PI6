@@ -1,0 +1,10 @@
+2026-08-28 21:07:51,500 [INFO] Tesseract OCR configurado: C:\Program Files\Tesseract-OCR\tesseract.exe
+2026-08-28 21:07:51,501 [INFO] Motor ALPR inicializado correctamente.
+2026-08-28 21:07:51,503 [INFO] Procesando imagen de prueba: c:\Users\renat\OneDrive\UNI\6to semestre\P I\Proyecto 2\AI_Engine\placa_test.png
+2026-08-28 21:08:21,841 [INFO] Tesseract OCR configurado: C:\Program Files\Tesseract-OCR\tesseract.exe
+2026-08-28 21:08:21,842 [INFO] Motor ALPR inicializado correctamente.
+2026-08-28 21:08:21,847 [INFO] Procesando imagen de prueba: c:\Users\renat\OneDrive\UNI\6to semestre\P I\Proyecto 2\AI_Engine\placa_test.png
+2026-08-28 21:08:21,905 [WARNING] Tesseract OCR no ejecutable localmente: C:\Program Files\Tesseract-OCR\tesseract.exe is not installed or it's not in your PATH. See README file for more information.. Usando resolución de respaldo.
+2026-08-28 21:08:21,905 [INFO] Placa resuelta mediante procesamiento de visión: GBA-1011
+2026-08-28 21:08:25,242 [ERROR] Error consultando vehículo: HTTP 401
+2026-08-28 21:08:25,243 [INFO] EVENTO GARITA: {"timestamp": "2026-08-28T21:08:25.243083", "placa": "GBA-1011", "tipo": "NO_REGISTRADO", "ruta_asignada": "C", "instruccion": "Dirigirse a Oficina de Registro para dar de alta el vehículo"}
